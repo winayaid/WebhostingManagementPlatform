@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "pnpm plop --plopfile ./.plop/plopfile.js"
+    "generate": "pnpm plop --plopfile ./.plop/plopfile.js",
+    "vercel-build": "prisma generate && prisma migrate deploy && pnpm prisma:seed && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
