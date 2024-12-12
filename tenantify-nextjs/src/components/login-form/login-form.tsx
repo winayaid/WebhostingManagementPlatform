@@ -1,16 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import { signIn } from 'next-auth/react';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,12 +15,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Spinner } from '../ui/spinner';
+import { Spinner } from "../ui/spinner";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -56,11 +53,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
       const parts = hostname.split(".");
 
       if (hostname === "localhost" || parts[parts.length - 1] === "localhost") {
-        if (parts.length > 1) {
+        if (parts.length > 2) {
           // For cases like andi.localhost
           setSubdomain(parts[0]);
         }
-      } else if (parts.length > 2) {
+      } else if (parts.length > 3) {
         // Assuming format is subdomain.domain.com
         setSubdomain(parts[0]);
       }
@@ -69,87 +66,60 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
+    if (subdomain) {
+      const body = {
+        redirect: false,
+        username: data.username,
+        password: data.password,
+        domain: subdomain,
+      };
 
-    const adminBody = {
-      redirect: false,
-      identifier: data.username,
-      password: data.password,
-    };
-
-    try {
-      const signed: any = await signIn("admin-credentials", adminBody);
-      setIsLoading(false);
-      if (signed?.error) {
+      try {
+        const signed: any = await signIn("credentials", body);
+        setIsLoading(false);
+        if (signed?.error) {
+          toast({
+            title: "Login failed. Please try again.",
+          });
+        } else if (signed?.ok) {
+          toast({
+            title: "Login successful!",
+          });
+          window.location.href = "/user";
+        }
+      } catch (error) {
+        setIsLoading(false);
         toast({
-          title: "Login failed. Please try again.",
+          title: `"Unexpected error:", ${error}`,
         });
-      } else if (signed?.ok) {
-        toast({
-          title: "Login successful!",
-        });
-        window.location.href = "/admin";
       }
-    } catch (error) {
-      setIsLoading(false);
-      toast({
-        title: `"Unexpected error:", ${error}`,
-      });
+    } else {
+      const adminBody = {
+        redirect: false,
+        identifier: data.username,
+        password: data.password,
+      };
+
+      try {
+        const signed: any = await signIn("admin-credentials", adminBody);
+        setIsLoading(false);
+        if (signed?.error) {
+          toast({
+            title: "Login failed. Please try again.",
+          });
+        } else if (signed?.ok) {
+          toast({
+            title: "Login successful!",
+          });
+          window.location.href = "/admin";
+        }
+      } catch (error) {
+        setIsLoading(false);
+        toast({
+          title: `"Unexpected error:", ${error}`,
+        });
+      }
     }
-    
-    // if (subdomain) {
-    //   const body = {
-    //     redirect: false,
-    //     username: data.username,
-    //     password: data.password,
-    //     domain: subdomain,
-    //   };
-
-    //   try {
-    //     const signed: any = await signIn("credentials", body);
-    //     setIsLoading(false);
-    //     if (signed?.error) {
-    //       toast({
-    //         title: "Login failed. Please try again.",
-    //       });
-    //     } else if (signed?.ok) {
-    //       toast({
-    //         title: "Login successful!",
-    //       });
-    //       window.location.href = "/user";
-    //     }
-    //   } catch (error) {
-    //     setIsLoading(false);
-    //     toast({
-    //       title: `"Unexpected error:", ${error}`,
-    //     });
-    //   }
-    // } else {
-    //   const adminBody = {
-    //     redirect: false,
-    //     identifier: data.username,
-    //     password: data.password,
-    //   };
-
-    //   try {
-    //     const signed: any = await signIn("admin-credentials", adminBody);
-    //     setIsLoading(false);
-    //     if (signed?.error) {
-    //       toast({
-    //         title: "Login failed. Please try again.",
-    //       });
-    //     } else if (signed?.ok) {
-    //       toast({
-    //         title: "Login successful!",
-    //       });
-    //       window.location.href = "/admin";
-    //     }
-    //   } catch (error) {
-    //     setIsLoading(false);
-    //     toast({
-    //       title: `"Unexpected error:", ${error}`,
-    //     });
-    //   }
-    // }
   };
 
   return (
