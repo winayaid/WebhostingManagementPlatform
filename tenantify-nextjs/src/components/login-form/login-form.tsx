@@ -53,11 +53,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
       const parts = hostname.split(".");
 
       if (hostname === "localhost" || parts[parts.length - 1] === "localhost") {
-        if (parts.length > 2) {
+        if (parts.length > 1) {
           // For cases like andi.localhost
           setSubdomain(parts[0]);
         }
-      } else if (parts.length > 3) {
+      } else if (parts.length > 2) {
         // Assuming format is subdomain.domain.com
         setSubdomain(parts[0]);
       }
