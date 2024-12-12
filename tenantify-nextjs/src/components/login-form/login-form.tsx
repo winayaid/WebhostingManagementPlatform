@@ -51,15 +51,21 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname;
       const parts = hostname.split(".");
+      console.log("Hostname:", hostname);
+      console.log("Parts:", parts);
 
       if (hostname === "localhost" || parts[parts.length - 1] === "localhost") {
         if (parts.length > 1) {
-          // For cases like andi.localhost
+          console.log("Subdomain (localhost):", parts[0]);
           setSubdomain(parts[0]);
         }
       } else if (parts.length > 2) {
-        // Assuming format is subdomain.domain.com
-        setSubdomain(parts[0]);
+        const subdomain = parts.slice(0, parts.length - 2).join(".");
+        console.log("Subdomain:", subdomain);
+        setSubdomain(subdomain);
+      } else {
+        console.log("No subdomain");
+        setSubdomain(null);
       }
     }
   }, []);
