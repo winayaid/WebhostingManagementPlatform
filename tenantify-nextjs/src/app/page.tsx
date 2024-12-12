@@ -1,14 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react";
 
-import { LoginForm } from '@/components/login-form';
-import api from '@/services/api';
+import { LoginForm } from "@/components/login-form";
+import api from "@/services/api";
 
 export default function Home() {
   const session = useSession();
@@ -27,14 +24,16 @@ export default function Home() {
               if (session?.data?.user) {
                 window.location.href = `/user`;
               } else {
-                window.location.href = `${
+                window.location.href = `https://${
                   window.location.hostname.split(".")[1]
                 }`;
               }
             });
         }
       } catch (error) {
-        window.location.href = `${window.location.hostname}`;
+        window.location.href = `https://${
+          window.location.hostname.split(".")[1]
+        }`;
       }
     }
   }, [session]);
