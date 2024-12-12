@@ -1,14 +1,18 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { LoginForm } from "@/components/login-form"
-import api from "@/services/api"
-import { useSession } from "next-auth/react"
+import { useSession } from 'next-auth/react';
+
+import { LoginForm } from '@/components/login-form';
+import api from '@/services/api';
 
 export default function Home() {
-  const session = useSession()
-  const [logo, setLogo] = useState("")
+  const session = useSession();
+  const [logo, setLogo] = useState("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -17,24 +21,26 @@ export default function Home() {
           api
             .get(`/tenant/check/${window.location.hostname.split(".")[0]}`)
             .then((res) => {
-              setLogo(res?.data?.logo)
+              setLogo(res?.data?.logo);
             })
             .catch(() => {
               if (session?.data?.user) {
-                window.location.href = `/user`
+                window.location.href = `/user`;
               } else {
-                window.location.href = `${process.env.NEXTAUTH_URL}`
+                window.location.href = `${
+                  window.location.hostname.split(".")[1]
+                }`;
               }
-            })
+            });
         }
       } catch (error) {
-        window.location.href = `${process.env.NEXTAUTH_URL}`
+        window.location.href = `${window.location.hostname}`;
       }
     }
-  }, [session])
+  }, [session]);
   return (
     <div>
       <LoginForm logo={logo} />
     </div>
-  )
+  );
 }
