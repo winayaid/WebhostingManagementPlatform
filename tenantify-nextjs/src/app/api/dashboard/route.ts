@@ -17,7 +17,10 @@ export async function GET(_req: Request) {
       totalTenants,
     };
 
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json(data, {
+      status: 200,
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Unknown error occurred";
