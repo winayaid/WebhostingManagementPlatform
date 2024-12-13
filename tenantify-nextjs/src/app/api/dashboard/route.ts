@@ -19,7 +19,7 @@ export async function GET(_req: Request) {
 
     return NextResponse.json(data, {
       status: 200,
-      headers: { "Cache-Control": "no-store" },
+      headers: { "Cache-Control": "no-cache" },
     });
   } catch (error) {
     const message =
