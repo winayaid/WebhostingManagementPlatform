@@ -13,8 +13,8 @@ export async function GET(_req: Request) {
     const totalTenants = await prisma.tenant.count();
 
     const data = {
-      totalClients,
-      totalTenants,
+      totalClients: totalClients,
+      totalTenants: totalTenants,
     };
 
     return NextResponse.json(data, {
