@@ -16,8 +16,8 @@ export default function Home() {
       try {
         if (window.location.hostname.split(".").length == 3) {
           window.location.href = `https://${
-            window.location.hostname.split(".")[2]
-          }.${window.location.hostname.split(".")[3]}`;
+            window.location.hostname.split(".")[1]
+          }.${window.location.hostname.split(".")[2]}`;
         }
         if (window.location.hostname.split(".").length > 3) {
           api
