@@ -14,6 +14,11 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
+        if (window.location.hostname.split(".").length == 3) {
+          window.location.href = `https://${
+            window.location.hostname.split(".")[2]
+          }.${window.location.hostname.split(".")[3]}`;
+        }
         if (window.location.hostname.split(".").length > 3) {
           api
             .get(`/tenant/check/${window.location.hostname.split(".")[0]}`)
