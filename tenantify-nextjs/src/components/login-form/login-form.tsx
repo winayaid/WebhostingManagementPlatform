@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { signIn } from "next-auth/react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { signIn } from 'next-auth/react';
+import Image from 'next/image';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,12 +18,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from '../ui/spinner';
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -59,8 +62,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
           console.log("Subdomain (localhost):", parts[0]);
           setSubdomain(parts[0]);
         }
-      } else if (parts.length > 2) {
-        const subdomain = parts.slice(0, parts.length - 2).join(".");
+      } else if (parts.length > 3) {
+        const subdomain = parts.slice(0, parts.length - 3).join(".");
         console.log("Subdomain:", subdomain);
         setSubdomain(subdomain);
       } else {

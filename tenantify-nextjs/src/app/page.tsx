@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        if (window.location.hostname.split(".").length > 2) {
+        if (window.location.hostname.split(".").length > 3) {
           api
             .get(`/tenant/check/${window.location.hostname.split(".")[0]}`)
             .then((res) => {
@@ -25,15 +25,15 @@ export default function Home() {
                 window.location.href = `/user`;
               } else {
                 window.location.href = `https://${
-                  window.location.hostname.split(".")[1]
-                }.${window.location.hostname.split(".")[2]}`;
+                  window.location.hostname.split(".")[2]
+                }.${window.location.hostname.split(".")[3]}`;
               }
             });
         }
       } catch (error) {
         window.location.href = `https://${
-          window.location.hostname.split(".")[1]
-        }.${window.location.hostname.split(".")[2]}`;
+          window.location.hostname.split(".")[2]
+        }.${window.location.hostname.split(".")[3]}`;
       }
     }
   }, [session]);
