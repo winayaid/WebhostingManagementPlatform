@@ -1,47 +1,41 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
-import { useSession } from "next-auth/react";
+import { headers } from "next/headers";
 
 import { Landing } from "@/components/landing";
 import { LoginForm } from "@/components/login-form";
-import api from "@/services/api";
 
-export default function Home() {
-  const session = useSession();
-  const [logo, setLogo] = useState("");
-  const [isLanding, setIsLanding] = useState(false);
+async function fetchTenantLogo(subdomain: string): Promise<string | null> {
+  const apiUrl = `${process.env.API_URL}/tenant/check/${subdomain}`;
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) return null;
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        if (window.location.hostname.split(".").length == 2) {
-          setIsLanding(true);
-          return;
-        }
-        if (window.location.hostname.split(".").length > 3) {
-          api
-            .get(`/tenant/check/${window.location.hostname.split(".")[0]}`)
-            .then((res) => {
-              setLogo(res?.data?.logo);
-            })
-            .catch(() => {
-              if (session?.data?.user) {
-                window.location.href = `/user`;
-              } else {
-                window.location.href = `https://${
-                  window.location.hostname.split(".")[2]
-                }.${window.location.hostname.split(".")[3]}`;
-              }
-            });
-        }
-      } catch (error) {
-        window.location.href = `https://${
-          window.location.hostname.split(".")[2]
-        }.${window.location.hostname.split(".")[3]}`;
-      }
+    const data: { logo?: string } = await response.json();
+    return data.logo || null;
+  } catch {
+    return null;
+  }
+}
+
+export default async function Home() {
+  const headersList = headers();
+  const hostname = headersList.get("host") || ""; // Ambil hostname dari header
+  const hostnameParts = hostname.split(".");
+  let isLanding = false;
+  let logo = "";
+
+  if (hostnameParts.length === 2) {
+    isLanding = true;
+  } else if (hostnameParts.length > 3) {
+    const subdomain = hostnameParts[0];
+    const fetchedLogo = await fetchTenantLogo(subdomain);
+
+    if (fetchedLogo) {
+      logo = fetchedLogo;
+    } else {
+      const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
+      return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
     }
-  }, [session]);
+  }
+
   return <div>{isLanding ? <Landing /> : <LoginForm logo={logo} />}</div>;
 }
