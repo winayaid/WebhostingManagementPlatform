@@ -38,9 +38,6 @@ export default async function Home() {
       const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
       return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
     }
-  } else {
-    const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
-    return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
   }
 
   return <div>{isLanding ? <Landing /> : <LoginForm logo={logo} />}</div>;
