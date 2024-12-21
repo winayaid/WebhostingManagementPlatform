@@ -26,7 +26,8 @@ export default async function Home() {
   if (hostnameParts.length === 2) {
     isLanding = true;
   } else if (hostnameParts.length === 3 && hostnameParts[0] != "app") {
-    isLanding = true;
+    const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
+    return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
   } else if (hostnameParts.length === 4 && hostnameParts[1] == "app") {
     const subdomain = hostnameParts[0];
     const fetchedLogo = await fetchTenantLogo(subdomain);
@@ -38,7 +39,8 @@ export default async function Home() {
       return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
     }
   } else {
-    isLanding = true;
+    const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
+    return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
   }
 
   return <div>{isLanding ? <Landing /> : <LoginForm logo={logo} />}</div>;
