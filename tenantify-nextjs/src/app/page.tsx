@@ -28,7 +28,7 @@ export default async function Home() {
   } else if (hostnameParts.length === 3 && hostnameParts[0] != "app") {
     const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
     return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
-  } else if (hostnameParts.length === 4 && hostnameParts[0] != "app") {
+  } else if (hostnameParts.length === 4 && hostnameParts[1] != "app") {
     const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
     return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
   } else if (hostnameParts.length === 4 && hostnameParts[1] == "app") {
