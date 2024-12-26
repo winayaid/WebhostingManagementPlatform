@@ -10,7 +10,7 @@
     "lint": "next lint",
     "generate": "pnpm plop --plopfile ./.plop/plopfile.js",
     "prisma:seed": "node --loader ts-node/esm prisma/seed.ts",
-    "vercel-build": "prisma generate && prisma migrate deploy && pnpm prisma:seed && next build"
+    "vercel-build": "prisma generate && prisma migrate reset --force --skip-seed && prisma migrate deploy && pnpm prisma:seed && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
