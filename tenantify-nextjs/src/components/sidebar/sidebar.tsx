@@ -1,22 +1,22 @@
-"use client";
+"use client"
 
-import { HouseIcon, StoreIcon, UsersIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { HouseIcon, StoreIcon, UsersIcon } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
 export const Sidebar = () => {
-  const pathname = usePathname();
+  const pathname = usePathname()
 
   const isActive = (path: string) => {
     if (path === "/admin") {
-      return pathname === path;
+      return pathname === path
     }
-    return pathname.startsWith(path);
-  };
+    return pathname.startsWith(path)
+  }
 
   return (
-    <div className="w-[256px] h-screen bg-blue-400 sticky top-0 px-5 py-6">
+    <div className="w-[256px] h-screen bg-sky-600 sticky top-0 px-5 py-6">
       {/* <div className="w-full h-16 bg-gray-200 rounded flex items-center justify-center">
         <p className="text-2xl font-bold italic">Logo Here</p>
       </div> */}
@@ -33,10 +33,8 @@ export const Sidebar = () => {
           <div>
             <Link
               href="/admin"
-              className={`flex py-2 px-4 rounded items-center space-x-2 ${
-                isActive("/admin")
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-blue-500 hover:text-white"
+              className={`flex py-2 px-4 rounded items-center space-x-2 text-white ${
+                isActive("/admin") ? "bg-sky-800" : "hover:bg-sky-800"
               }`}
             >
               <HouseIcon />
@@ -48,10 +46,8 @@ export const Sidebar = () => {
           <div>
             <Link
               href="/admin/client"
-              className={`flex py-2 px-4 rounded items-center space-x-2 ${
-                isActive("/admin/client")
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-blue-500 hover:text-white"
+              className={`flex py-2 px-4 rounded items-center space-x-2 text-white ${
+                isActive("/admin/client") ? "bg-sky-800" : "hover:bg-sky-800"
               }`}
             >
               <UsersIcon />
@@ -63,10 +59,8 @@ export const Sidebar = () => {
           <div>
             <Link
               href="/admin/tenant"
-              className={`flex py-2 px-4 rounded items-center space-x-2 ${
-                isActive("/admin/tenant")
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-blue-500 hover:text-white"
+              className={`flex py-2 px-4 rounded items-center space-x-2 text-white ${
+                isActive("/admin/tenant") ? "bg-sky-800" : "hover:bg-sky-800"
               }`}
             >
               <StoreIcon />
@@ -76,5 +70,5 @@ export const Sidebar = () => {
         </li>
       </ul>
     </div>
-  );
-};
+  )
+}

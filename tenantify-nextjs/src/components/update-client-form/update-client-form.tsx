@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import "react-phone-number-input/style.css";
+import "react-phone-number-input/style.css"
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react"
 
-import { format } from "date-fns";
-import { useParams, useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import PhoneInput from "react-phone-number-input";
-import useSWR from "swr";
-import { z } from "zod";
+import { format } from "date-fns"
+import { useParams, useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import PhoneInput from "react-phone-number-input"
+import useSWR from "swr"
+import { z } from "zod"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -19,22 +19,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
-import api from "@/services/api";
-import { User } from "@/types/user";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@/components/ui/select"
+import { toast } from "@/hooks/use-toast"
+import api from "@/services/api"
+import { User } from "@/types/user"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-import { DeleteClientForm } from "../delete-client-form";
-import { Spinner } from "../ui/spinner";
+import { DeleteClientForm } from "../delete-client-form"
+import { Spinner } from "../ui/spinner"
 
 const FormSchema = z.object({
   first_name: z
@@ -53,23 +53,23 @@ const FormSchema = z.object({
   country: z.string().nonempty({ message: "Country is required." }),
   phone_number: z.string().nonempty({ message: "Phone number is required." }),
   tenant: z.string().optional(),
-});
+})
 
 interface Tenant {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 export function UpdateClientForm() {
-  const param = useParams();
-  const router = useRouter();
-  const [phone, setPhone] = useState<string | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const param = useParams()
+  const router = useRouter()
+  const [phone, setPhone] = useState<string | undefined>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { data: user } = useSWR<User>(`/user/${param?.slug}`);
+  const { data: user } = useSWR<User>(`/user/${param?.slug}`)
   const { data: tenants } = useSWR<Tenant[]>(
     `/tenant?userId=${param?.slug}&filter=tenant_available`
-  );
+  )
 
   const defaultValues = {
     first_name: user?.firstName ?? "",
@@ -86,19 +86,19 @@ export function UpdateClientForm() {
     country: user?.country ?? "",
     phone_number: user?.phoneNumber ?? "",
     tenant: user?.tenant?.name ?? "",
-  };
+  }
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     values: defaultValues,
-  });
+  })
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
+    setIsLoading(true)
     // Find the tenant ID corresponding to the selected tenant name
     const selectedTenant = tenants?.find(
       (tenant) => tenant.name === data.tenant
-    );
+    )
 
     const body = {
       firstName: data.first_name,
@@ -112,40 +112,40 @@ export function UpdateClientForm() {
       zipCode: data.zip_postcode,
       country: data.country,
       tenantId: selectedTenant ? parseInt(selectedTenant.id, 10) : null, // Use the found tenant ID
-    };
+    }
 
     try {
-      const response = await api.put(`/user/${user?.id}`, body);
-      setIsLoading(false);
+      const response = await api.put(`/user/${user?.id}`, body)
+      setIsLoading(false)
       if (response.status === 200) {
         toast({
           title: "Success",
           description: "User has been successfully updated.",
-        });
+        })
         setTimeout(() => {
-          router.push("/admin/client");
-        }, 1000);
+          router.push("/admin/client")
+        }, 1000)
       } else {
         toast({
           title: "Error",
           description: "Unexpected response status.",
-        });
+        })
       }
     } catch (error) {
-      setIsLoading(false);
-      console.error("Error adding user:", error);
+      setIsLoading(false)
+      console.error("Error adding user:", error)
       toast({
         title: "Error",
         description: "Failed to add user. Please try again.",
-      });
+      })
     }
   }
 
   useEffect(() => {
     if (user?.phoneNumber) {
-      setPhone(user?.phoneNumber);
+      setPhone(user?.phoneNumber)
     }
-  }, [user]);
+  }, [user])
 
   return (
     <Form {...form}>
@@ -343,7 +343,7 @@ export function UpdateClientForm() {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              );
+              )
             }}
           />
         </div>
@@ -357,7 +357,7 @@ export function UpdateClientForm() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-500"
+            className="w-full bg-sky-600"
           >
             {isLoading && <Spinner />}
             <span className={isLoading ? "ml-2" : ""}>Save Changes</span>
@@ -365,5 +365,5 @@ export function UpdateClientForm() {
         </div>
       </form>
     </Form>
-  );
+  )
 }

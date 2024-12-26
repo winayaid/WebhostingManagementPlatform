@@ -21,7 +21,7 @@ export const ClientSidebar = () => {
   const { data: tenant } = useSWR(`/tenant/${session?.data?.user?.tenantId}`)
 
   return (
-    <div className="w-[256px] h-screen bg-blue-400 sticky top-0 px-5 py-6">
+    <div className="w-[256px] h-screen bg-sky-600 sticky top-0 px-5 py-6">
       <div className="w-full h-16 flex items-center justify-center relative">
         {tenant?.logo && (
           <Image
@@ -38,10 +38,8 @@ export const ClientSidebar = () => {
           <div>
             <Link
               href="/user"
-              className={`flex py-2 px-4 rounded items-center space-x-2 ${
-                isActive("/user")
-                  ? "bg-blue-500 text-white"
-                  : "hover:bg-blue-500 hover:text-white"
+              className={`flex py-2 px-4 rounded items-center space-x-2 text-white ${
+                isActive("/user") ? "bg-sky-800" : "hover:bg-sky-800"
               }`}
             >
               <HouseIcon />

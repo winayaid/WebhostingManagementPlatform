@@ -23,6 +23,7 @@ interface User {
 interface Tenant {
   id: number;
   name: string;
+  subdomain: string;
   domain: string;
   logo?: string;
   user?: User;
@@ -37,7 +38,8 @@ export const TenantTable = () => {
         <TableRow>
           <TableHead>ID</TableHead>
           <TableHead>Tenant Name</TableHead>
-          <TableHead>Domain</TableHead>
+          <TableHead>Subdomain</TableHead>
+          <TableHead>Custom Domain</TableHead>
           <TableHead>Client Name</TableHead>
           <TableHead>Logo</TableHead>
           <TableHead className="w-[100px]">Action</TableHead>
@@ -51,13 +53,18 @@ export const TenantTable = () => {
               <TableCell>{item?.name}</TableCell>
               <TableCell className="text-blue-500 cursor-pointer">
                 <Link
-                  href={`https://${item?.domain}.${window.location.hostname}`}
+                  href={`https://${item?.subdomain}.${window.location.hostname}`}
                   passHref
                   target="_blank"
                 >
                   <span>
-                    https://{item?.domain}.{window.location.hostname}
+                    https://{item?.subdomain}.{window.location.hostname}
                   </span>
+                </Link>
+              </TableCell>
+              <TableCell className="text-blue-500 cursor-pointer">
+                <Link href={`https://${item?.domain}`} passHref target="_blank">
+                  <span>https://{item?.domain}</span>
                 </Link>
               </TableCell>
               <TableCell>{item?.user?.firstName}</TableCell>
@@ -73,7 +80,7 @@ export const TenantTable = () => {
               </TableCell>
               <TableCell>
                 <Link passHref href={`/admin/tenant/${item?.id}`}>
-                  <Button className="bg-blue-500">Manage</Button>
+                  <Button className="bg-sky-600">Manage</Button>
                 </Link>
               </TableCell>
             </TableRow>

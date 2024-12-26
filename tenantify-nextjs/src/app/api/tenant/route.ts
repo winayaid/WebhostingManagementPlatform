@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     const requestData = await req.json();
 
     // Define allowed fields for creation
-    const allowedFields = ["name", "domain", "logo", "clientId"];
+    const allowedFields = ["name", "subdomain", "domain", "logo", "clientId"];
 
     // Filter the input data to include only allowed fields
     const filteredData = Object.fromEntries(
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
     // Validate required fields
     if (
       typeof filteredData.name !== "string" ||
+      typeof filteredData.subdomain !== "string" ||
       typeof filteredData.domain !== "string" ||
       typeof filteredData.logo !== "string"
     ) {
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
     const createdTenant = await prisma.tenant.create({
       data: {
         name: filteredData.name,
+        subdomain: filteredData.subdomain,
         domain: filteredData.domain,
         logo: filteredData.logo || null,
       },

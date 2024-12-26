@@ -1,40 +1,38 @@
-import bcrypt from "bcrypt"
-import { NextRequest, NextResponse } from "next/server"
+import bcrypt from "bcrypt";
+import { NextRequest, NextResponse } from "next/server";
 
-import prisma from "@/lib/db"
-import { generateToken } from "@/lib/jwt"
+import prisma from "@/lib/db";
+import { generateToken } from "@/lib/jwt";
 
 // Define the POST handler
 export async function POST(req: NextRequest) {
   try {
-    const { username, password, domain } = await req.json()
+    const { username, password, domain } = await req.json();
 
     const tenant = await prisma.tenant.findUnique({
       where: { domain: domain },
       include: { user: true },
-    })
+    });
 
     if (!tenant) {
       return NextResponse.json(
         { message: "You don't have access to this web" },
         { status: 404 }
-      )
+      );
     }
 
-    console.log("tenant", tenant)
-
-    const user = tenant.user?.username === username ? tenant.user : null
+    const user = tenant.user?.username === username ? tenant.user : null;
 
     // If user doesn't exist or password doesn't match
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
         { message: "Invalid credentials" },
         { status: 401 }
-      )
+      );
     }
 
     // Generate JWT
-    const token = generateToken({ id: user.id, email: user.email })
+    const token = generateToken({ id: user.id, email: user.email });
 
     // Login successful, return role and success message
     return NextResponse.json(
@@ -53,12 +51,12 @@ export async function POST(req: NextRequest) {
         },
       },
       { status: 200 }
-    )
+    );
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return NextResponse.json(
       { message: "An error occurred during login: " + error },
       { status: 500 }
-    )
+    );
   }
 }

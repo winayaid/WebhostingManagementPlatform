@@ -1,6 +1,7 @@
 export interface Tenant {
   id: number;
   name: string;
+  subdomain: string;
   domain: string;
   clientId?: string | null;
   logo?: string | null;

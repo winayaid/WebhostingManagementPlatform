@@ -75,7 +75,7 @@ export async function PUT(
     const requestData = await req.json();
 
     // Define allowed fields for update
-    const allowedFields = ["name", "domain", "logo", "clientId"];
+    const allowedFields = ["name", "subdomain", "domain", "logo", "clientId"];
 
     // Filter the input data to include only allowed fields
     const filteredData = Object.fromEntries(

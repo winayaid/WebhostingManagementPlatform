@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import "react-phone-number-input/style.css";
+import "react-phone-number-input/style.css"
 
-import { useState } from "react";
+import { useState } from "react"
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import PhoneInput from "react-phone-number-input";
-import useSWR from "swr";
-import { z } from "zod";
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import PhoneInput from "react-phone-number-input"
+import useSWR from "swr"
+import { z } from "zod"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
@@ -18,20 +18,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
-import api from "@/services/api";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@/components/ui/select"
+import { toast } from "@/hooks/use-toast"
+import api from "@/services/api"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../ui/spinner"
 
 // Schema for user form validation
 const FormSchema = z.object({
@@ -55,18 +55,18 @@ const FormSchema = z.object({
     message: "Password must be at least 6 characters.",
   }),
   tenant: z.string().optional(),
-});
+})
 
 interface Tenant {
-  id: string;
-  name: string;
+  id: string
+  name: string
 }
 
 export function AddClientForm() {
-  const router = useRouter();
-  const { data: tenants } = useSWR<Tenant[]>("/tenant?filter=tenant_available");
-  const [phone, setPhone] = useState<string | undefined>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter()
+  const { data: tenants } = useSWR<Tenant[]>("/tenant?filter=tenant_available")
+  const [phone, setPhone] = useState<string | undefined>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -86,21 +86,21 @@ export function AddClientForm() {
       password: "",
       tenant: "",
     },
-  });
+  })
 
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
-    setIsLoading(true);
+    setIsLoading(true)
     if (!phone) {
       toast({
         title: "Error",
         description: "Please complete the phone number.",
-      });
-      return;
+      })
+      return
     }
     // Find the tenant ID corresponding to the selected tenant name
     const selectedTenant = tenants?.find(
       (tenant) => tenant.name === values.tenant
-    );
+    )
 
     const body = {
       firstName: values?.firstName,
@@ -118,34 +118,34 @@ export function AddClientForm() {
       password: values?.password,
       role: "CLIENT",
       tenantId: selectedTenant ? parseInt(selectedTenant.id, 10) : null, // Use the found tenant ID
-    };
+    }
     try {
-      const response = await api.post(`/user`, body);
-      setIsLoading(false);
+      const response = await api.post(`/user`, body)
+      setIsLoading(false)
       if (response.status === 201) {
         toast({
           title: "Success",
           description: "User has been successfully added.",
-        });
-        form.reset();
+        })
+        form.reset()
         setTimeout(() => {
-          router.push("/admin/client");
-        }, 1000);
+          router.push("/admin/client")
+        }, 1000)
       } else {
         toast({
           title: "Error",
           description: "Unexpected response status.",
-        });
+        })
       }
     } catch (error) {
-      setIsLoading(false);
-      console.error("Error adding user:", error);
+      setIsLoading(false)
+      console.error("Error adding user:", error)
       toast({
         title: "Error",
         description: "Failed to add user. Please try again.",
-      });
+      })
     }
-  };
+  }
 
   return (
     <Form {...form}>
@@ -340,7 +340,7 @@ export function AddClientForm() {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              );
+              )
             }}
           />
           {/* Company Name */}
@@ -375,12 +375,12 @@ export function AddClientForm() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-500"
+          className="w-full bg-sky-600"
         >
           {isLoading && <Spinner />}
           <span className={isLoading ? "ml-2" : ""}>Save</span>
         </Button>
       </form>
     </Form>
-  );
+  )
 }

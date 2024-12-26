@@ -18,12 +18,25 @@ async function fetchTenantLogo(subdomain: string): Promise<string | null> {
 
 export default async function Home() {
   const headersList = headers();
-  const hostname = headersList.get("host") || ""; // Ambil hostname dari header
+  const hostname = headersList.get("host") || "";
   const hostnameParts = hostname.split(".");
   let isLanding = false;
   let logo = "";
 
-  if (hostnameParts.length === 2) {
+  if (hostnameParts.slice(-2).join(".") != "winaya.id") {
+    const fetchedLogo = await fetchTenantLogo(
+      hostnameParts.slice(-2).join(".")
+    );
+    if (fetchedLogo) {
+      logo = fetchedLogo;
+    } else {
+      const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;
+      return <meta httpEquiv="refresh" content={`0; url=${redirectUrl}`} />;
+    }
+  } else if (
+    hostnameParts.length === 2 &&
+    hostnameParts.join(".") == "winaya.id"
+  ) {
     isLanding = true;
   } else if (hostnameParts.length === 3 && hostnameParts[0] != "app") {
     const redirectUrl = `https://${hostnameParts.slice(-2).join(".")}`;

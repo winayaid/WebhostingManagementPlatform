@@ -1,26 +1,29 @@
-import { NextRequest, NextResponse } from "next/server"
-import QRCode from "qrcode"
-import speakeasy from "speakeasy"
+import {
+  NextRequest,
+  NextResponse,
+} from 'next/server';
+import QRCode from 'qrcode';
+import speakeasy from 'speakeasy';
 
-import prisma from "@/lib/db"
+import prisma from '@/lib/db';
 
 // Define the POST handler
 export async function POST(req: NextRequest) {
   try {
-    const { userId } = await req.json()
+    const { userId, firstName } = await req.json();
 
     // Generate a secret for the user
     const secret = speakeasy.generateSecret({
-      name: `WHCMS (${userId})`,
-    })
+      name: `WHCMS (${firstName})`,
+    });
 
     // Check if otpauth_url is defined
     if (!secret.otpauth_url) {
-      throw new Error("Failed to generate OTP Auth URL")
+      throw new Error("Failed to generate OTP Auth URL");
     }
 
     // Generate a QR code URL
-    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url)
+    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
 
     // Save the secret temporarily
     await prisma.user.update({
@@ -30,18 +33,18 @@ export async function POST(req: NextRequest) {
         qrCode: qrCodeUrl,
         isTwoFactorEnabled: true,
       },
-    })
+    });
 
     return NextResponse.json(
       {
         qrCodeUrl: qrCodeUrl,
       },
       { status: 200 }
-    )
+    );
   } catch (error) {
     return NextResponse.json(
       { message: error || "Internal Server Error" },
       { status: 500 }
-    )
+    );
   }
 }

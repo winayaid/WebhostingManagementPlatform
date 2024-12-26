@@ -1,70 +1,70 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useState } from "react"
 
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useSession } from "next-auth/react"
+import Image from "next/image"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
-import api from "@/services/api";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { toast } from "@/hooks/use-toast"
+import api from "@/services/api"
+import { zodResolver } from "@hookform/resolvers/zod"
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../ui/spinner"
 
 // Updated schema to include password validation
 const FormSchema = z.object({
   token: z.string().min(2, {
     message: "Token must be 6 digits.",
   }),
-});
+})
 
 export const ClientVerifyForm = () => {
-  const session = useSession();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const session = useSession()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       token: "",
     },
-  });
+  })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    setIsLoading(true);
+    setIsLoading(true)
     const body = {
       userId: session.data?.user?.id,
       token: data.token,
-    };
+    }
 
     api
       .post("/2fa/verify", body)
       .then(async () => {
-        setIsLoading(false);
+        setIsLoading(false)
         // Update the session with the new `verify` property
-        await session.update({ verify: true });
+        await session.update({ verify: true })
         toast({
           title: "Verified",
-        });
+        })
         setTimeout(() => {
-          window.location.href = `/user`;
-        }, 2000);
+          window.location.href = `/user`
+        }, 2000)
       })
       .catch(() => {
-        setIsLoading(false);
+        setIsLoading(false)
         toast({
           title: "Error",
           description: "Invalid verification code",
-        });
+        })
         // toast({
         //   title: "Error",
         //   description: (
@@ -75,7 +75,7 @@ export const ClientVerifyForm = () => {
         //     </pre>
         //   ),
         // })
-      });
+      })
   }
 
   return (
@@ -114,7 +114,7 @@ export const ClientVerifyForm = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500"
+              className="w-full bg-sky-600"
             >
               {isLoading && <Spinner />}
               <span className={isLoading ? "ml-2" : ""}>Verify</span>
@@ -123,5 +123,5 @@ export const ClientVerifyForm = () => {
         </form>
       </Form>
     </div>
-  );
-};
+  )
+}

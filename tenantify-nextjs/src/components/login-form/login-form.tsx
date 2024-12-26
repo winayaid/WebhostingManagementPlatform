@@ -1,16 +1,13 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from "react";
 
-import { signIn } from 'next-auth/react';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { signIn } from "next-auth/react";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -18,12 +15,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { toast } from '@/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Spinner } from '../ui/spinner';
+import { Spinner } from "../ui/spinner";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -39,6 +36,7 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
+  const [domain, setDomain] = useState<string | null>("");
   const [subdomain, setSubdomain] = useState<string | null>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -50,24 +48,42 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
     },
   });
 
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const hostname = window.location.hostname;
+  //     const parts = hostname.split(".");
+
+  //     if (hostname === "localhost" || parts[parts.length - 1] === "localhost") {
+  //       if (parts.length > 1) {
+  //         setSubdomain(parts[0]);
+  //       }
+  //     } else if (parts.length > 3) {
+  //       const subdomain = parts.slice(0, parts.length - 3).join(".");
+  //       setSubdomain(subdomain);
+  //     } else {
+  //       setSubdomain(null);
+  //     }
+  //   }
+  // }, []);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname;
       const parts = hostname.split(".");
-      console.log("Hostname:", hostname);
-      console.log("Parts:", parts);
 
       if (hostname === "localhost" || parts[parts.length - 1] === "localhost") {
         if (parts.length > 1) {
-          console.log("Subdomain (localhost):", parts[0]);
           setSubdomain(parts[0]);
         }
+      } else if (
+        parts.length >= 2 &&
+        `${parts[parts.length - 2]}.${parts[parts.length - 1]}` !== "winaya.id"
+      ) {
+        setDomain(`${parts[parts.length - 2]}.${parts[parts.length - 1]}`);
       } else if (parts.length > 3) {
         const subdomain = parts.slice(0, parts.length - 3).join(".");
-        console.log("Subdomain:", subdomain);
         setSubdomain(subdomain);
       } else {
-        console.log("No subdomain");
         setSubdomain(null);
       }
     }
@@ -75,16 +91,43 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     setIsLoading(true);
-    if (subdomain) {
+    if (domain) {
       const body = {
         redirect: false,
         username: data.username,
         password: data.password,
-        domain: subdomain,
+        domain: domain,
       };
 
       try {
-        const signed: any = await signIn("credentials", body);
+        const signed: any = await signIn("domain-credentials", body);
+        setIsLoading(false);
+        if (signed?.error) {
+          toast({
+            title: "Login failed. Please try again.",
+          });
+        } else if (signed?.ok) {
+          toast({
+            title: "Login successful!",
+          });
+          window.location.href = "/user";
+        }
+      } catch (error) {
+        setIsLoading(false);
+        toast({
+          title: `"Unexpected error:", ${error}`,
+        });
+      }
+    } else if (subdomain) {
+      const body = {
+        redirect: false,
+        username: data.username,
+        password: data.password,
+        subdomain: subdomain,
+      };
+
+      try {
+        const signed: any = await signIn("subdomain-credentials", body);
         setIsLoading(false);
         if (signed?.error) {
           toast({
@@ -183,7 +226,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-blue-500"
+              className="w-full bg-sky-600"
             >
               {isLoading && <Spinner />}
               <span className={isLoading ? "ml-2" : ""}>Login</span>

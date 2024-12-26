@@ -21,7 +21,7 @@ export const Navbar = () => {
   const session = useSession()
 
   return (
-    <div className="w-full bg-white shadow sticky top-0 py-5 px-10 flex justify-end items-center">
+    <div className="w-full bg-white shadow sticky top-0 py-5 px-10 flex justify-end items-center bg-white z-10">
       <div>
         <DropdownMenu>
           <DropdownMenuTrigger>

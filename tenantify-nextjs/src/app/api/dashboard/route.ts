@@ -1,29 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"
+import prisma from "@/lib/db"
 
-import prisma from "@/lib/db";
-
-export async function GET(_req: Request) {
+export async function GET() {
   try {
     const totalClients = await prisma.user.count({
       where: {
         role: "CLIENT",
       },
-    });
+    })
 
-    const totalTenants = await prisma.tenant.count();
+    const totalTenants = await prisma.tenant.count()
 
     const data = {
-      totalClients: totalClients,
-      totalTenants: totalTenants,
-    };
+      totalClients,
+      totalTenants,
+    }
 
-    return NextResponse.json(data, {
-      status: 200,
-      headers: { "Cache-Control": "no-cache" },
-    });
+    return NextResponse.json(data, { status: 200 })
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Unknown error occurred";
-    return NextResponse.json({ error: message }, { status: 500 });
+      error instanceof Error ? error.message : "Unknown error occurred"
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }

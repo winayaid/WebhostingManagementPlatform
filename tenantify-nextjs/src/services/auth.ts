@@ -1,7 +1,7 @@
-import type { NextAuthOptions } from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
+import type { NextAuthOptions } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
-import api from "./api"
+import api from "./api";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -22,22 +22,22 @@ export const authOptions: NextAuthOptions = {
             const mergeData = {
               ...data?.data,
               jwt: data?.data.token,
-            }
+            };
 
-            return mergeData
+            return mergeData;
           })
           .catch((e) => {
-            console.log(e)
+            console.log(e);
 
-            return null
-          })
+            return null;
+          });
 
         // If no error and we have user data, return it
-        return user
+        return user;
       },
     }),
     CredentialsProvider({
-      id: "credentials",
+      id: "domain-credentials",
       name: "User Credentials Login",
       credentials: {
         username: { label: "Identifier", type: "text" },
@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const user = await api
-          .post(`/auth/signin`, {
+          .post(`/auth/domain-signin`, {
             username: credentials?.username,
             password: credentials?.password,
             domain: credentials?.domain,
@@ -55,18 +55,51 @@ export const authOptions: NextAuthOptions = {
             const mergeData = {
               ...data?.data,
               jwt: data?.data.token,
-            }
+            };
 
-            return mergeData
+            return mergeData;
           })
           .catch((e) => {
-            console.log(e)
+            console.log(e);
 
-            return null
-          })
+            return null;
+          });
 
         // If no error and we have user data, return it
-        return user
+        return user;
+      },
+    }),
+    CredentialsProvider({
+      id: "subdomain-credentials",
+      name: "User Credentials Login",
+      credentials: {
+        username: { label: "Identifier", type: "text" },
+        password: { label: "Password", type: "password" },
+        subdomain: { label: "Subdomain", type: "text" },
+      },
+      async authorize(credentials) {
+        const user = await api
+          .post(`/auth/subdomain-signin`, {
+            username: credentials?.username,
+            password: credentials?.password,
+            domain: credentials?.subdomain,
+          })
+          .then(({ data }) => {
+            const mergeData = {
+              ...data?.data,
+              jwt: data?.data.token,
+            };
+
+            return mergeData;
+          })
+          .catch((e) => {
+            console.log(e);
+
+            return null;
+          });
+
+        // If no error and we have user data, return it
+        return user;
       },
     }),
   ],
@@ -86,24 +119,24 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, trigger, user, session }) {
       if (user) {
-        token.user = user.user
-        token.jwt = user.jwt
-        token.user.verify = token.user.isTwoFactorEnabled ? false : true
+        token.user = user.user;
+        token.jwt = user.jwt;
+        token.user.verify = token.user.isTwoFactorEnabled ? false : true;
       }
 
       if (trigger === "update") {
-        token.user.verify = session.verify
+        token.user.verify = session.verify;
       }
 
-      return token
+      return token;
     },
 
     async session({ session, token }) {
       // Make the access token available in the session object
-      session.user = token.user
-      session.jwt = token.jwt
+      session.user = token.user;
+      session.jwt = token.jwt;
 
-      return session
+      return session;
     },
   },
 
@@ -112,4 +145,4 @@ export const authOptions: NextAuthOptions = {
   },
 
   debug: false,
-}
+};

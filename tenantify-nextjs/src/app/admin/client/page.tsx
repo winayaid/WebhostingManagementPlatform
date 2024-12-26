@@ -9,7 +9,7 @@ export default function DashboardClient() {
       <div className="mb-5 flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Client</h1>
         <Link passHref href="/admin/client-add">
-          <Button className="bg-blue-500">Add Client</Button>
+          <Button className="bg-sky-600">Add Client</Button>
         </Link>
       </div>
       <ClientTable />

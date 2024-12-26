@@ -41,10 +41,15 @@ const FormSchema = z.object({
   name: z
     .string()
     .min(2, { message: "Tenant Name must be at least 2 characters." }),
-  domain: z
+  subdomain: z
     .string()
     .min(2, { message: "Domain must be at least 2 characters." })
     .regex(/^[^\s]+$/, { message: "Domain must not contain spaces." }),
+  domain: z
+    .string()
+    .min(2, { message: "Domain must be at least 2 characters." })
+    .regex(/^[^\s]+$/, { message: "Domain must not contain spaces." })
+    .optional(),
   client: z.string().nonempty({ message: "Client is required." }),
   logo: z.any().optional(), // Logo is now optional
 });
@@ -61,6 +66,7 @@ export const UpdateTenantForm = () => {
 
   const defaultValues = {
     name: tenant?.name ?? "",
+    subdomain: tenant?.subdomain ?? "",
     domain: tenant?.domain ?? "",
     client: `${tenant?.user?.firstName} ${tenant?.user?.lastName}` ?? "",
   };
@@ -140,6 +146,7 @@ export const UpdateTenantForm = () => {
     // Save data
     const body = {
       name: values.name,
+      subdomain: values?.subdomain,
       domain: values.domain,
       clientId: selectedClient
         ? selectedClient.id.toString()
@@ -199,10 +206,10 @@ export const UpdateTenantForm = () => {
           <div>
             <FormField
               control={form.control}
-              name="domain"
+              name="subdomain"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domain</FormLabel>
+                  <FormLabel>Subdomain</FormLabel>
                   <FormControl>
                     <Input placeholder="Starter" {...field} />
                   </FormControl>
@@ -210,8 +217,22 @@ export const UpdateTenantForm = () => {
                 </FormItem>
               )}
             />
-            <small>{form.watch("domain")}.cloudexample.net</small>
+            <small>{form.watch("subdomain")}.cloudexample.net</small>
           </div>
+          {/* Domain Field */}
+          <FormField
+            control={form.control}
+            name="domain"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Domain</FormLabel>
+                <FormControl>
+                  <Input placeholder="Domain" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="client"

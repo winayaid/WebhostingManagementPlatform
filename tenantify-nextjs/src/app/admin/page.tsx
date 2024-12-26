@@ -1,15 +1,12 @@
 "use client"
 import { AdminLayout } from "@/components/admin-layout"
+import { Tenant, User } from "@/types/user"
 import Link from "next/link"
 import useSWR from "swr"
 
-interface DashboardData {
-  totalClients: number
-  totalTenants: number
-}
-
 export default function Dashboard() {
-  const { data } = useSWR<DashboardData>("dashboard")
+  const { data: tenants } = useSWR<Tenant[]>("/tenant")
+  const { data: users } = useSWR<User[]>("/user")
 
   return (
     <AdminLayout>
@@ -17,13 +14,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-4 gap-5">
         <Link href="/admin/client">
           <div className="bg-white p-5 rounded shadow-md">
-            <p className="text-2xl font-semibold">{data?.totalClients}</p>
+            <p className="text-2xl font-semibold">{users?.length}</p>
             <p className="text-gray-500">Total Client</p>
           </div>
         </Link>
         <Link href="/admin/tenant">
           <div className="bg-white p-5 rounded shadow-md">
-            <p className="text-2xl font-semibold">{data?.totalTenants}</p>
+            <p className="text-2xl font-semibold">{tenants?.length}</p>
             <p className="text-gray-500">Total Tenant</p>
           </div>
         </Link>

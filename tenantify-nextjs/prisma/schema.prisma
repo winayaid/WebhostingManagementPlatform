@@ -16,7 +16,8 @@ datasource db {
 model Tenant {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(255)
-  domain     String    @db.VarChar(255) @unique
+  subdomain  String    @db.VarChar(255) @unique
+  domain     String?    @db.VarChar(255) @unique
   clientId   String?   @db.VarChar(255)
   logo       String?   @db.VarChar(255)
   createdAt  DateTime  @default(now())

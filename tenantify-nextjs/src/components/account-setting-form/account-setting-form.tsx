@@ -1,16 +1,21 @@
 "use client";
+import 'react-phone-number-input/style.css';
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-import { format } from "date-fns";
-import { useSession } from "next-auth/react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { setTimeout } from "timers";
-import { z } from "zod";
+import { format } from 'date-fns';
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import PhoneInput from 'react-phone-number-input';
+import { setTimeout } from 'timers';
+import { z } from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,14 +23,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
-import api from "@/services/api";
-import { User } from "@/types/user";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import api from '@/services/api';
+import { User } from '@/types/user';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { Spinner } from "../ui/spinner";
+import { Spinner } from '../ui/spinner';
 
 const FormSchema = z.object({
   first_name: z
@@ -42,7 +47,6 @@ const FormSchema = z.object({
   state: z.string().nonempty({ message: "State is required." }),
   zip_postcode: z.string().nonempty({ message: "Zip/Postcode is required." }),
   country: z.string().nonempty({ message: "Country is required." }),
-  phone_number: z.string().nonempty({ message: "Phone number is required." }),
 });
 
 export const AccountSettingForm = () => {
@@ -50,6 +54,7 @@ export const AccountSettingForm = () => {
   const session = useSession();
   const [user, setUser] = useState<User>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [phone, setPhone] = useState<string | undefined>();
 
   const defaultValues = {
     first_name: user?.firstName ?? "",
@@ -85,7 +90,7 @@ export const AccountSettingForm = () => {
       state: data.state,
       zipCode: data.zip_postcode,
       country: data.country,
-      phoneNumber: data.phone_number,
+      phoneNumber: phone,
     };
 
     try {
@@ -119,6 +124,7 @@ export const AccountSettingForm = () => {
     setIsLoading(true);
     const body = {
       userId: session.data?.user?.id,
+      firstName: session?.data?.user?.firstName,
     };
     try {
       api
@@ -143,6 +149,12 @@ export const AccountSettingForm = () => {
       });
     }
   }, [session, isLoading]);
+
+  useEffect(() => {
+    if (user?.phoneNumber) {
+      setPhone(user?.phoneNumber);
+    }
+  }, [user]);
 
   return (
     <section className="flex items-start space-x-10">
@@ -292,25 +304,21 @@ export const AccountSettingForm = () => {
                 </FormItem>
               )}
             />
-            {/* Phone Number */}
-            <FormField
-              control={form.control}
-              name="phone_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Phone Number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col space-y-2">
+              <h1>Phone Number</h1>
+              <PhoneInput
+                defaultCountry="US"
+                value={phone}
+                onChange={setPhone}
+                international
+                className="border px-2 py-1.5 rounded shadow-sm"
+              />
+            </div>
           </div>
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-500"
+            className="w-full bg-sky-600"
           >
             {isLoading && <Spinner />}
             <span className={isLoading ? "ml-2" : ""}>Submit</span>
@@ -337,7 +345,7 @@ export const AccountSettingForm = () => {
             <Button
               type="button"
               disabled={isLoading}
-              className="w-full bg-blue-500"
+              className="w-full bg-sky-600"
               onClick={() => enable2FA()}
             >
               {isLoading && <Spinner />}

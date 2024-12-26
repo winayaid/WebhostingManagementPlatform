@@ -40,7 +40,7 @@ export const ClientTable = () => {
             <TableCell>{user?.tenant && user?.tenant?.name}</TableCell>
             <TableCell>
               <Link passHref href={`/admin/client/${user?.id}`}>
-                <Button className="bg-blue-500">Manage</Button>
+                <Button className="bg-sky-600">Manage</Button>
               </Link>
             </TableCell>
           </TableRow>
