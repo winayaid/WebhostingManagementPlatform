@@ -181,12 +181,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({ logo }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-1/4 space-y-6"
         >
-          {logo && subdomain && (
+          {logo && (subdomain || domain) && (
             <div className="flex justify-center">
               <Image src={logo} width={100} height={100} alt="logo" />
             </div>
           )}
-          {!subdomain && (
+          {!subdomain && !domain && (
             <div className="flex justify-center">
               <Image
                 src={"/static/images/star.webp"}
