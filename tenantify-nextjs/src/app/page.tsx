@@ -24,9 +24,8 @@ export default async function Home() {
   let logo = "";
 
   if (hostnameParts.slice(-2).join(".") != "winaya.id") {
-    const fetchedLogo = await fetchTenantLogo(
-      hostnameParts.slice(-2).join(".")
-    );
+    const domain = hostnameParts.slice(-2).join(".");
+    const fetchedLogo = await fetchTenantLogo(domain);
     if (fetchedLogo) {
       logo = fetchedLogo;
     } else {

@@ -82,7 +82,7 @@ export const authOptions: NextAuthOptions = {
           .post(`/auth/subdomain-signin`, {
             username: credentials?.username,
             password: credentials?.password,
-            domain: credentials?.subdomain,
+            subdomain: credentials?.subdomain,
           })
           .then(({ data }) => {
             const mergeData = {
